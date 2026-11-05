@@ -45,7 +45,13 @@
 	</view>
 
       <view v-if="showComments" class="comments-section">
-        <text class="section-title">评论</text>
+        <view class="comments-header">
+          <text class="section-title">评论</text>
+          <view class="comment-sort">
+            <text class="sort-item" :class="{ active: sortMode === 'hot' }" @click="sortMode = 'hot'">热度</text>
+            <text class="sort-item" :class="{ active: sortMode === 'time' }" @click="sortMode = 'time'">时间</text>
+          </view>
+        </view>
         <view v-if="!topComments.length" class="empty-comments">暂无评论</view>
         <view v-for="comment in topComments" :key="comment.comment_id" class="comment-thread">
           <view v-for="item in commentRows(comment)" :key="item.comment_id" class="comment-row" :class="{ 'reply-row': !!item.parent_id }" @click="selectReply(comment, item)">
@@ -54,15 +60,18 @@
               <text class="comment-user">{{ item.comment_author_name || '用户' }}</text>
               <text v-if="item.reply_to_id && item.reply_to_id !== comment.comment_id" class="reply-target">回复 {{ replyTargetName(item.reply_to_id) }}</text>
               <text class="comment-text">{{ item.comment_content }}</text>
-              <view class="comment-actions">
-                <text>回复</text>
-                <text class="comment-like" :class="{ active: hasReaction(item, 'like_users') }" @click.stop="toggleCommentLike(item)"><uni-icons :type="hasReaction(item, 'like_users') ? 'heart-filled' : 'heart'" :color="hasReaction(item, 'like_users') ? '#E76F51' : '#74797A'" size="15" /> {{ item.likes || 0 }}</text>
+              <view class="comment-footer">
+                <view class="comment-meta">
+                  <text class="comment-time">{{ formatTime(item.create_time) }}</text>
+                  <text class="comment-reply" @click.stop="selectReply(comment, item)">回复</text>
+                </view>
+                <view class="comment-like" :class="{ active: hasReaction(item, 'like_users') }" @click.stop="toggleCommentLike(item)"><uni-icons :type="hasReaction(item, 'like_users') ? 'heart-filled' : 'heart'" :color="hasReaction(item, 'like_users') ? '#E76F51' : '#74797A'" size="15" /><text>{{ item.likes || 0 }}</text></view>
               </view>
             </view>
           </view>
-          <button v-if="repliesFor(comment.comment_id).length > 2" class="more-replies" @click="toggleReplies(comment.comment_id)">
-            {{ repliesLabel(comment.comment_id) }}
-          </button>
+          <view v-if="repliesFor(comment.comment_id).length" class="replies-box" @click="toggleReplies(comment.comment_id)">
+            <text>{{ repliesLabel(comment.comment_id) }}</text>
+          </view>
         </view>
 
         <view v-if="replyTarget" class="reply-hint">
@@ -93,18 +102,25 @@ const commentInput = ref('');
 const replyTarget = ref(null);
 const replyParentId = ref('');
 const expandedReplies = ref({});
+const sortMode = ref('hot');
 const currentUserId = ref('');
 const currentUserName = ref('');
 const currentUserAvatar = ref('');
 
 const allComments = computed(() => Array.isArray(post.value?.comments) ? post.value.comments : []);
-const topComments = computed(() => allComments.value.filter(comment => !comment.parent_id));
+const topComments = computed(() => {
+  const list = allComments.value.filter(comment => !comment.parent_id);
+  const byTime = (a, b) => Number(b.create_time || 0) - Number(a.create_time || 0);
+  if (sortMode.value === 'time') return [...list].sort(byTime);
+  return [...list].sort((a, b) => Number(b.likes || 0) - Number(a.likes || 0) || byTime(a, b));
+});
 const repliesFor = parentId => allComments.value.filter(comment => comment.parent_id === parentId);
-const visibleReplies = parentId => expandedReplies.value[parentId] ? repliesFor(parentId) : repliesFor(parentId).slice(0, 2);
-const commentRows = comment => [comment, ...visibleReplies(comment.comment_id)];
+const commentRows = comment => expandedReplies.value[comment.comment_id]
+  ? [comment, ...repliesFor(comment.comment_id)]
+  : [comment];
 const repliesLabel = parentId => expandedReplies.value[parentId]
   ? '收起回复'
-  : `展开其余 ${repliesFor(parentId).length - 2} 条回复`;
+  : `查看${repliesFor(parentId).length}条回复`;
 const replyTargetName = id => {
   const target = allComments.value.find(comment => comment.comment_id === id);
   return target?.comment_author_name || target?.comment_author_id || '用户';
@@ -231,7 +247,8 @@ const selectReply = (parent, target) => {
   replyParentId.value = parent.comment_id;
   replyTarget.value = target;
 };
-const clearReply = () => {
+//清空ParentId 和 reply_to_id两个值，防止下一条评论挂在上一条评论链里面
+const clearReplyParentId = () => {
   replyParentId.value = '';
   replyTarget.value = null;
 };
@@ -239,85 +256,45 @@ const toggleReplies = parentId => {
   expandedReplies.value[parentId] = !expandedReplies.value[parentId];
 };
 
-const submitComment = async (post) => {
-		if (!post.tempComment.trim()) {
-			return uni.showToast({ title: '评论不能为空', icon: 'none' });
-		}
+const submitComment = async () => {
+  const content = commentInput.value.trim();
+  if (!post.value || saving.value || !content || !requireLogin()) return;
+  saving.value = true;
+  const newComment = {
+    comment_id: String(Date.now()) + Math.random().toString(36).substring(2, 7),
+    comment_content: content,
+    comment_author_id: currentUserId.value,
+    comment_author_name: currentUserName.value || '热心喵友',
+    comment_author_avatar: currentUserAvatar.value,
+    create_time: Date.now(),
+    parent_id: replyParentId.value,
+    reply_to_id: replyTarget.value?.comment_id || '',
+    likes: 0,
+    like_users: []
+  };
+  try {
+    const db = uniCloud.database();
+	const newest_post = await readPost();
+	if(!newest_post) throw new Error('帖子不存在');
+	const latestComments = Array.isArray(newest_post.comments) ? newest_post.comments : [];
+	const updatedComments = [...latestComments, newComment];
+	const newCommentAccount = Number(newest_post.comment_account || 0) + 1;
 	
-		const db = uniCloud.database();
-	
-		// 构建符合 Schema 的新评论对象
-		const newComment = {
-		    comment_id: String(Date.now()) + Math.random().toString(36).substring(2, 7),
-		    comment_content: content,
-		    comment_author_id: currentUserId.value,
-		    comment_author_name: currentUserName.value || '热心喵友',
-		    comment_author_avatar: currentUserAvatar.value,
-		    create_time: Date.now(),
-		    parent_id: replyParentId.value,
-		    reply_to_id: replyTarget.value?.comment_id || '',
-		    likes: 0,
-		    like_users: []
-		  };
-	
-		// 1. 先在前端合并，并用 slice(-5) 永远只截取保留最后最亲的5条
-		let updatedComments = [...(post.comments || []), newComment];
-		// if (updatedComments.length > 5) {
-		// 	updatedComments = updatedComments.slice(-5);
-		// }
-		
-		const newCommentAccount = (post.comment_account || 0) + 1;
-	
-		try {
-			// 3. 将最新加工完毕的数据整体打包直接写库
-			await db.collection('posts').doc(post._id).update({
-				comments: updatedComments,
-				comment_account: newCommentAccount
-			});
-			
-			// 4. 同步更新本地响应式状态以触发视图刷新
-			post.comments = updatedComments;
-			post.comment_account = newCommentAccount;
-			post.tempComment = ''; 
-			uni.showToast({ title: '评论成功', icon: 'success' });
-		} catch (e) {
-			uni.showToast({ title: '评论发布失败', icon: 'none' });
-			console.error(e);
-		}
-	};
-// const submitComment = async () => {
-//   const content = commentInput.value.trim();
-//   if (!post.value || saving.value || !content || !requireLogin()) return;
-//   saving.value = true;
-//   const newComment = {
-//     comment_id: String(Date.now()) + Math.random().toString(36).substring(2, 7),
-//     comment_content: content,
-//     comment_author_id: currentUserId.value,
-//     comment_author_name: currentUserName.value || '热心喵友',
-//     comment_author_avatar: currentUserAvatar.value,
-//     create_time: Date.now(),
-//     parent_id: replyParentId.value,
-//     reply_to_id: replyTarget.value?.comment_id || '',
-//     likes: 0,
-//     like_users: []
-//   };
-//   try {
-//     const db = uniCloud.database();
-//     await db.collection('posts').doc(postId.value).update({
-//       comments: db.command.push({ each: [newComment] }),
-//       comment_account: db.command.inc(1)
-//     });
-//     await loadPost(false);
-//     commentInput.value = '';
-//     clearReply();
-//     showComments.value = true;
-//   } catch (e) {
-//     console.error('发表评论失败', e);
-//     uni.showToast({ title: '发送失败，请重试', icon: 'none' });
-//   } finally {
-//     saving.value = false;
-//   }
-// };
+	await db.collection('posts').doc(postId.value).update({
+	  comments: updatedComments,
+	  comment_account: newCommentAccount
+	});
+    await loadPost(false);
+    commentInput.value = '';
+    clearReplyParentId();
+    showComments.value = true;
+  } catch (e) {
+    console.error('发表评论失败', e);
+    uni.showToast({ title: '发送失败，请重试', icon: 'none' });
+  } finally {
+    saving.value = false;
+  }
+};
 
 const formatTime = (timestamp) => {
 		if (!timestamp) return '';
@@ -378,6 +355,12 @@ const sharePost = () => {
 .action-bar { display: flex; justify-content: space-around; border-top: 1px solid #f0f0f0; padding-top: 12px; margin-top: 5px; }
 .action-item { display: flex; align-items: center; color: #666; font-size: 14px; padding: 5px 10px; }
 .action-item .icon { margin-right: 4px; font-size: 16px; }
+.comments-section { padding-top: 30rpx; }
+.comments-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24rpx; }
+.section-title { display: block; font-size: 30rpx; font-weight: 600; }
+.comment-sort { display: flex; align-items: center; gap: 4rpx; padding: 4rpx; border-radius: 999rpx; background: rgba(45, 52, 54, 0.06); }
+.sort-item { padding: 6rpx 22rpx; border-radius: 999rpx; color: var(--subtle); font-size: 23rpx; line-height: 1.4; }
+.sort-item.active { background: var(--paper); color: var(--orange); font-weight: 600; }
 	/* .comment-section { background: #f9f9f9; border-radius: 8px; padding: 10px; margin-top: 12px; }
 	.comment-item { margin-bottom: 6px; font-size: 13px; }
 	.comment-user { font-weight: bold; color: #333; }
@@ -385,8 +368,6 @@ const sharePost = () => {
 	.comment-input-box { display: flex; margin-top: 10px; align-items: center; }
 	.comment-input { flex: 1; background: #fff; border: 1px solid #ddd; border-radius: 15px; padding: 4px 12px; font-size: 13px; height: 30px; } */
 .active { color: var(--orange); }
-.comments-section { padding-top: 30rpx; }
-.section-title { display: block; font-size: 30rpx; font-weight: 600; margin-bottom: 24rpx; }
 .empty-comments { color: var(--subtle); font-size: 25rpx; padding-bottom: 24rpx; }
 .comment-thread { padding: 0 0 22rpx; margin-bottom: 20rpx; border-bottom: 1rpx solid var(--line); }
 .comment-row { display: flex; padding: 8rpx 0; }
@@ -396,9 +377,13 @@ const sharePost = () => {
 .comment-user { font-size: 26rpx; font-weight: 600; }
 .comment-text { font-size: 27rpx; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
 .reply-target { color: var(--green); font-size: 23rpx; }
-.comment-actions { display: flex; gap: 36rpx; color: var(--subtle); font-size: 24rpx; padding: 8rpx 0; }
+.comment-footer { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; padding-top: 8rpx; }
+.comment-meta { display: flex; align-items: center; gap: 16rpx; min-width: 0; }
+.comment-time, .comment-publish { color: var(--subtle); font-size: 24rpx; }
+.comment-reply { color: var(--subtle); font-size: 24rpx; padding: 4rpx 12rpx; }
+.comment-like { display: flex; align-items: center; color: var(--subtle); font-size: 24rpx; padding: 4rpx 0; }
 .comment-like.active { color: var(--orange); }
-.more-replies { margin: 0 0 0 80rpx; padding: 0; height: 54rpx; line-height: 54rpx; background: transparent; color: var(--green); font-size: 24rpx; text-align: left; }
+.replies-box { display: inline-flex; align-items: center; margin-left: 80rpx; margin-top: 4rpx; padding: 10rpx 22rpx; border-radius: 12rpx; background: rgba(45, 52, 54, 0.06); color: var(--green); font-size: 24rpx; }
 .reply-hint { display: flex; justify-content: space-between; margin: 16rpx 0; color: var(--subtle); font-size: 25rpx; }
 .cancel-reply { color: var(--green); }
 .comment-editor { display: flex; align-items: center; gap: 12rpx; margin-top: 20rpx; }
