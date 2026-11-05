@@ -1,0 +1,6 @@
+{
+  "name": "users-login",
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}

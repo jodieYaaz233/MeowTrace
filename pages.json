@@ -1,0 +1,64 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+			{ "path": "pages/map/map", "style": { "navigationBarTitleText": "喵迹地图" } },
+			    { "path": "pages/community/community", "style": { "navigationBarTitleText": "喵星社区" } },
+			    { "path": "pages/profile/profile_written", "style": { "navigationBarTitleText": "我的喵迹" } },
+			    { "path": "pages/profile/profile", "style": { "navigationBarTitleText": "个人主页2" } },
+			    { "path": "pages/recognize/recognize", "style": { "navigationBarTitleText": "智能识别" } },
+			    { "path": "pages/cat-detail/cat-detail", "style": { "navigationBarTitleText": "猫咪档案" } },
+			    { "path": "pages/add-cat/add-cat", "style": { "navigationBarTitleText": "首次建档" } },
+			    { "path": "pages/add-record/add-record", "style": { "navigationBarTitleText": "添加救助记录" } },
+			    { "path": "pages/community/publish-post", "style": { "navigationBarTitleText": "发布动态" } },
+				{ "path": "pages/profile_written/register","style": { "navigationBarTitleText": "注册" }},
+				{ "path": "pages/profile_written/login","style": { "navigationBarTitleText": "登录" }},
+				{
+				  "path": "pages/ai-chat/vet_ai",
+				  "style": {
+				    "navigationStyle": "custom" 
+				  }
+				},
+				{
+					"path": "pages/profile_written/quiz",
+					"style": {
+						"navigationBarTitleText": "测试界面"
+					}
+				},
+				{
+					"path": "pages/community/posts",
+					"style": {
+						"navigationBarTitleText": "帖子详情"
+					}
+				}
+				
+	],
+	"condition": {
+		"list": [{
+				"path": "pages/list/detail"
+			}, {
+				"path": "pages/list/list"
+			},
+			{
+				"path": "pages/ucenter/settings/settings"
+			}
+		],
+		"current": 1
+	},
+	"tabBar": {
+	    "color": "#999999",
+	    "selectedColor": "#f06c7a",
+	    "list": [
+	      { "pagePath": "pages/map/map", "text": "地图", "iconPath": "static/tabbar/map.png", "selectedIconPath": "static/tabbar/map-active.png" },
+	      { "pagePath": "pages/community/community", "text": "社区", "iconPath": "static/tabbar/community.png", "selectedIconPath": "static/tabbar/community-active.png" },
+	      { "pagePath": "pages/profile/profile_written", "text": "我的", "iconPath": "static/tabbar/profile.png", "selectedIconPath": "static/tabbar/profile-active.png" }
+	    ]
+	  },
+	  "permission": {
+	    "scope.userLocation": { "desc": "您的位置将用于查看附近的流浪猫" }
+	  },
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}

@@ -1,0 +1,77 @@
+{
+  "bsonType": "object",
+  "required": ["name","cover_image"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "文档 ID"
+    },
+    "name": {
+      "bsonType": "string",
+      "title": "猫咪昵称"
+    },
+    "cover_image": {
+      "bsonType": "string",
+      "title": "封面图URL"
+    },
+	"discription":{
+	  "bsonType": "string",
+      "title": "猫咪描述"
+	},
+	"status":{
+		"bsonType": "array",
+		"title":"最近三次状态",
+		"items":{
+			"bsonType":"string"
+		}
+	},
+    "latest_status": {
+      "bsonType": "string",
+      "title": "最新状态(健康/生病/绝育等)"
+    },
+    "location": {
+      "bsonType": "point",
+      "title": "地理坐标(经纬度)"
+    },
+    "address": {
+      "bsonType": "string",
+      "title": "详细地址"
+    },
+    "creator_id": {
+      "bsonType": "string",
+      "title": "建档人ID"
+    },
+    "create_time": {
+      "bsonType": "timestamp",
+      "title": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    },
+	"last_update_time":{
+		"bsonType": "timestamp",
+      "title": "最后更新时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+	},
+	"rescue_history":{
+		"bsonType": "array",
+		"title":"救助历史",
+		"items":{
+			"bsonType":"object",
+			"properties":{
+				"action_type":{"bsonType":"string"},
+				"note":{"bsonType":"string"},
+				"helper_id":{"bsonType":"string"},
+				"create_time":{"bsonType":"timestamp"}
+			}
+		}
+	}
+  }
+}

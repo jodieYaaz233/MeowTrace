@@ -1,0 +1,13 @@
+{
+  "name": "vetChat",
+  "dependencies": {},
+  "description": "喵迹守护AI兽医助手函数",
+  "timeout":60,
+  "extensions": {
+    "uni-cloud-jql": {}
+  },
+  "cloudfunction-config":{
+  	  "timeout":60,
+  	  "memorysize":512
+  }
+}

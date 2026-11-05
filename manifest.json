@@ -1,0 +1,180 @@
+{
+    "name" : "喵迹守护",
+    "appid" : "__UNI__A034A81",
+    "description" : "这是一个流浪猫智能救助与社区管理平台，构建了一套覆盖流浪猫发现、识别、建档、救助、社交全链路的数字化解决方案。",
+    "versionName" : "1.1.0",
+    "versionCode" : "100",
+    "transformPx" : false,
+    /* 5+App特有相关 */
+    "app-plus" : {
+        "usingComponents" : true,
+        "nvueStyleCompiler" : "uni-app",
+        "compilerVersion" : 3,
+        "splashscreen" : {
+            "alwaysShowBeforeRender" : true,
+            "waiting" : true,
+            "autoclose" : true,
+            "delay" : 0
+        },
+        /* 模块配置 */
+        "modules" : {
+            "Camera" : {},
+            "Geolocation" : {},
+            "Maps" : {},
+            "OAuth" : {}
+        },
+        /* 应用发布信息 */
+        "distribute" : {
+            /* android打包配置 */
+            "android" : {
+                "permissions" : [
+                    "<uses-permission android:name=\"android.permission.CHANGE_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
+                    "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera.autofocus\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+                    "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
+                    "<uses-feature android:name=\"android.hardware.camera\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
+                ],
+                "schemes" : "protect",
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a", "x86" ]
+            },
+            /* ios打包配置 */
+            "ios" : {
+                "privacyDescription" : {
+                    "NSPhotoLibraryUsageDescription" : "是否允许访问相册以上传照片？",
+                    "NSPhotoLibraryAddUsageDescription" : "是否允许访问相册加入照片？",
+                    "NSCameraUsageDescription" : "是否允许打开摄像头以拍照？",
+                    "NSMicrophoneUsageDescription" : "是否允许打开麦克风？",
+                    "NSLocationWhenInUseUsageDescription" : "是否允许访问位置信息？",
+                    "NSLocationAlwaysUsageDescription" : "是否允许后台访问位置信息？",
+                    "NSLocationAlwaysAndWhenInUseUsageDescription" : "是否允许访问位置信息？",
+                    "NSCalendarsUsageDescription" : "是否允许查看日历？",
+                    "NSContactsUsageDescription" : "是否允许访问通讯录？",
+                    "NSBluetoothPeripheralUsageDescription" : "是否允许使用蓝牙信息？",
+                    "NSBluetoothAlwaysUsageDescription" : "是否允许使用蓝牙信息？",
+                    "NSLocalNetworkUsageDescription" : "是否允许访问本地网络？"
+                },
+                "dSYMs" : false
+            },
+            /* SDK配置 */
+            "sdkConfigs" : {
+                "geolocation" : {
+                    "tencent" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "apikey_ios" : "4NJBZ-UBI67-5OUX2-P5EUF-I3G7T-C4BQC",
+                        "apikey_android" : "4NJBZ-UBI67-5OUX2-P5EUF-I3G7T-C4BQC"
+                    }
+                },
+                "maps" : {
+                    "tencent" : {
+                        "key" : "4NJBZ-UBI67-5OUX2-P5EUF-I3G7T-C4BQC"
+                    }
+                },
+                "push" : {},
+                "oauth" : {}
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "unpackage/res/icons/72x72.png",
+                    "xhdpi" : "unpackage/res/icons/96x96.png",
+                    "xxhdpi" : "unpackage/res/icons/144x144.png",
+                    "xxxhdpi" : "unpackage/res/icons/192x192.png"
+                },
+                "ios" : {
+                    "appstore" : "unpackage/res/icons/1024x1024.png",
+                    "ipad" : {
+                        "app" : "unpackage/res/icons/76x76.png",
+                        "app@2x" : "unpackage/res/icons/152x152.png",
+                        "notification" : "unpackage/res/icons/20x20.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "proapp@2x" : "unpackage/res/icons/167x167.png",
+                        "settings" : "unpackage/res/icons/29x29.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "spotlight" : "unpackage/res/icons/40x40.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png"
+                    },
+                    "iphone" : {
+                        "app@2x" : "unpackage/res/icons/120x120.png",
+                        "app@3x" : "unpackage/res/icons/180x180.png",
+                        "notification@2x" : "unpackage/res/icons/40x40.png",
+                        "notification@3x" : "unpackage/res/icons/60x60.png",
+                        "settings@2x" : "unpackage/res/icons/58x58.png",
+                        "settings@3x" : "unpackage/res/icons/87x87.png",
+                        "spotlight@2x" : "unpackage/res/icons/80x80.png",
+                        "spotlight@3x" : "unpackage/res/icons/120x120.png"
+                    }
+                }
+            }
+        }
+    },
+    /* 快应用特有相关 */
+    "quickapp" : {},
+    /* 小程序特有相关 */
+    "mp-weixin" : {
+        "appid" : "wx102b73e014e65091",
+        "setting" : {
+            "urlCheck" : false,
+            "unipush" : {
+                "enable" : true
+            }
+        },
+        "usingComponents" : true,
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "此小程序需要获取用户当前位置，实现共享流浪猫位置信息功能"
+            }
+        },
+        "requiredBackgroundModes" : [ "location" ],
+        "requiredPrivateInfos" : [
+            "getLocation",
+            "chooseLocation",
+            "onLocationChange",
+            "startLocationUpdate"
+        ],
+        "plugins" : {}
+    },
+    "mp-alipay" : {
+        "usingComponents" : true
+    },
+    "mp-baidu" : {
+        "usingComponents" : true
+    },
+    "mp-toutiao" : {
+        "usingComponents" : true
+    },
+    "uniStatistics" : {
+        "enable" : false
+    },
+    "vueVersion" : "3",
+    "h5" : {
+        "sdkConfigs" : {
+            "maps" : {
+                "tencent" : {
+                    "key" : "4NJBZ-UBI67-5OUX2-P5EUF-I3G7T-C4BQC"
+                }
+            }
+        },
+        "title" : "喵迹守护",
+        "router" : {
+            "mode" : "hash",
+            "base" : "./"
+        },
+        "devServer" : {
+            "https" : false
+        },
+        "optimization" : {
+            "treeShaking" : {
+                "enable" : true
+            }
+        }
+    }
+}

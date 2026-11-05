@@ -1,0 +1,48 @@
+// 文档教程: https://uniapp.dcloud.net.cn/uniCloud/schema
+{
+	"bsonType": "object",
+	"required": [],
+	"permission": {
+		"read": true,
+		"create": true,
+		"update": true,
+		"delete": false
+	},
+	"properties": {
+		"_id": {
+			"description": "ID，系统自动生成"
+		},
+		"username":{
+			"bsonType": "string",
+			"description": "用户名"
+		},
+		"nickname":{
+			"bsonType": "string",
+			"description": "昵称"
+		},
+		"avatar":{
+			"bsonType": "string",
+			"description": "头像地址"
+		},
+		"password":{
+			"bsonType": "string",
+			"description": "密码"
+		},
+		"mobile":{
+			"bsonType": "string",
+			"description": "手机号"
+		},
+		"quizscore":{
+			"bsonType": "int",
+			"description": "入站测试分数"
+		},
+		"credit_score":{
+			"bsonType": "int",
+			"description": "信用分"
+		},
+		"register_date":{
+			"bsonType": "date",
+			"description": "注册日期"
+		}
+	}
+}

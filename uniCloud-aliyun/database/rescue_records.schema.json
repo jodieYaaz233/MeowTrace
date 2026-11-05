@@ -1,0 +1,50 @@
+{
+  "bsonType": "object",
+  "required": ["cat_id", "action_type"],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": false,
+    "delete": false
+  },
+  "properties": {
+    "_id": {
+      "description": "文档 ID"
+    },
+	"cat_name": {
+      "bsonType": "string",
+      "title": "被救助猫咪名称"
+    },
+    "cat_id": {
+      "bsonType": "string",
+      "title": "被救助猫咪ID"
+    },
+	"cover_image": {
+	  "bsonType": "string",
+	  "title": "封面图URL"
+	},
+    "user_id": {
+      "bsonType": "string",
+      "title": "救助人ID"
+    },
+    "action_type": {
+      "bsonType": "string",
+      "title": "行为类型(投喂/就医/驱虫等)"
+    },
+    "note": {
+      "bsonType": "string",
+      "title": "备注说明"
+    },
+	"latest_status":{
+	"bsonType": "string",
+		"title":"最近状态"
+	},
+    "create_time": {
+      "bsonType": "timestamp",
+      "title": "记录时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "update_rescue",
+  "dependencies": {},
+  "extensions": {
+    "uni-cloud-jql": {}
+  }
+}
